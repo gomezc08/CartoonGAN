@@ -103,7 +103,7 @@ export default function CartoonStudio() {
     <div className="min-h-screen w-full bg-zinc-950 text-zinc-100 py-6">
       <header className="mx-auto w-full max-w-7xl px-12 pt-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-3xl font-extrabold tracking-tight">AdSnap Studio</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">Memo Studio</h1>
           <div className="flex items-center gap-2 text-xs text-violet-300">
             <Sparkles className="h-4 w-4" /> Cartoon Generator
           </div>
@@ -201,7 +201,7 @@ export default function CartoonStudio() {
                     <textarea
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="e.g., a couple holding hands playing soccer in GWU colors, cute cartoon style"
+                      placeholder="e.g., a couple holding hands and taking a selfie with the GWU logo in the background"
                       className="min-h-[110px] w-full resize-y rounded-xl border border-zinc-700 bg-zinc-950/40 p-3 text-sm outline-none ring-pink-600/30 placeholder:text-zinc-500 focus:ring-2"
                     />
                   </Field>
@@ -279,7 +279,7 @@ export default function CartoonStudio() {
       </main>
 
       <footer className="mx-auto my-12 w-full max-w-7xl px-12 text-center text-xs text-zinc-500">
-        Built with ❤️ for creative ads & avatars.
+        Built with ❤️ by the Memo Studio Team.
       </footer>
     </div>
   );
