@@ -1,1 +1,1 @@
-# CartoonGAN
+# Memo Studio - Cartoon GAN
