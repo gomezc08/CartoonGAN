@@ -1,1 +1,13 @@
-# CartoonGAN
+# Memo Studio - Cartoon GAN
+
+Allow users to turn their images into cartoon images. See full techspec here: https://docs.google.com/document/d/1EDiuOM7pzMlwyO4g-ZQU2VtMs2yAtt-3llWDrcgQpJQ/edit?usp=sharing
+
+## Prerequisites
+- Node.js: Download here: https://nodejs.org/en 
+    - node -v >= 22.19.0
+    - npm -v >= 11.6.0
+- Python: Python 3.8+ with pip
+
+## Quick Start
+### 1. Run Frontend:
+`npm run dev`
