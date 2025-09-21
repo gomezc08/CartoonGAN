@@ -1,18 +1,17 @@
 import React, { useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, ImagePlus, Sparkles, Wand2, Download, Trash2, Loader2, Camera } from "lucide-react";
+import { textToCartoon, imageToCartoon } from "./lib/Api";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function mockGenerateFromImage(_file: File, _opts: any) {
-  // TODO: swap with your real API call
-  await sleep(1200);
+  const response = await imageToCartoon(_file);
   return URL.createObjectURL(_file); // Echoes the uploaded image as a preview placeholder
 }
 
 async function mockGenerateFromText(_prompt: string, _opts: any) {
-  // TODO: swap with your real API call – return a generated image URL
-  await sleep(1200);
+  const response = await textToCartoon(_prompt);
   // Placeholder: a data URL  transparent PNG (1x1). Replace with real output.
   return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
 }
@@ -52,7 +51,6 @@ export default function CartoonStudio() {
 
   // img2img
   const [file, setFile] = useState<File | null>(null);
-  const [strength, setStrength] = useState(0.6);
 
   // txt2img
   const [prompt, setPrompt] = useState("");
@@ -82,7 +80,7 @@ export default function CartoonStudio() {
           alert("Please upload an image first.");
           return;
         }
-        url = await mockGenerateFromImage(file, { ...commonOpts, strength });
+        url = await mockGenerateFromImage(file, { ...commonOpts });
       } else {
         if (!prompt.trim()) {
           alert("Please enter a prompt first.");
@@ -174,19 +172,6 @@ export default function CartoonStudio() {
                         </div>
                       )}
                     </div>
-                  </Field>
-
-                  <Field label="Cartoonize strength">
-                    <input
-                      type="range"
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      value={strength}
-                      onChange={(e) => setStrength(parseFloat(e.target.value))}
-                      className="range w-full"
-                    />
-                    <div className="text-right text-xs text-zinc-400">{strength.toFixed(2)}</div>
                   </Field>
                 </motion.div>
               ) : (
