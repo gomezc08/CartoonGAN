@@ -1,6 +1,6 @@
 # Memo Studio - Cartoon GAN
 
-Allow users to turn their images into cartoon images. See full techspec here: https://docs.google.com/document/d/1EDiuOM7pzMlwyO4g-ZQU2VtMs2yAtt-3llWDrcgQpJQ/edit?usp=sharing
+Allow users to turn their images into cartoon images. See full techspec here: [https://docs.google.com/document/d/1EDiuOM7pzMlwyO4g-ZQU2VtMs2yAtt-3llWDrcgQpJQ/edit?usp=sharing](https://docs.google.com/document/d/1iprGaKx4DIpROkuvtuIHND9XW9GibiCqs7uuzehG4FY/edit?usp=sharing)
 
 ## Prerequisites
 - Node.js: Download here: https://nodejs.org/en 
