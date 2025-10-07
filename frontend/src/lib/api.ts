@@ -1,4 +1,4 @@
-export async function imageToCartoon(image: File) {
+export async function pix2Pix(image: File) {
     const cartoonImage = `Cartoonize the following image: ${image.name}`;
     console.log("Generating the following image to cartoon:", cartoonImage);
     const response = await fetch("/api/generate_cartoon/image", {
@@ -10,14 +10,15 @@ export async function imageToCartoon(image: File) {
     return response.json();
 }
 
-export async function textToCartoon(prompt: string) {
-    const cartoonPrompt = `Cartoonize the following text: ${prompt}`;
-    console.log("Generating the following text to cartoon:", cartoonPrompt);
-    const response = await fetch("/api/generate_cartoon/text", {
+// CyclicGAN image-to-image variant
+export async function cyclicGANImage(image: File) {
+    const cyclicImageDescriptor = `CyclicGAN cartoonize image: ${image.name}`;
+    console.log("Generating (CyclicGAN) image to cartoon:", cyclicImageDescriptor);
+    const response = await fetch("/api/generate_cartoon/cyclic_image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartoonPrompt })
+        body: JSON.stringify({ cyclicImageDescriptor })
     });
-    if (!response.ok) throw new Error("Generate text to cartoon failed");
+    if (!response.ok) throw new Error("CyclicGAN image to cartoon failed");
     return response.json();
 }
