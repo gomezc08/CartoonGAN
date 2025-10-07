@@ -71,6 +71,16 @@ export default function CartoonStudio() {
     if (tab === "cyclic_img2img") cyclicFileInputRef.current?.click();
   };
 
+  const clearPixFile = () => {
+    setPixFile(null);
+    if (pixFileInputRef.current) pixFileInputRef.current.value = "";
+  };
+
+  const clearCyclicFile = () => {
+    setCyclicFile(null);
+    if (cyclicFileInputRef.current) cyclicFileInputRef.current.value = "";
+  };
+
   const removeResult = (idx: number) => setResults((r) => r.filter((_, i) => i !== idx));
 
   // No shared options currently
@@ -147,7 +157,17 @@ export default function CartoonStudio() {
                   exit={{ opacity: 0, y: -8 }}
                   className="space-y-5"
                 >
-                  <Field label="Upload image (drag & drop supported)" right={<button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>}>
+                  <Field
+                    label="Upload image (drag & drop supported)"
+                    right={
+                      <div className="flex items-center gap-3">
+                        {pixFile && (
+                          <button onClick={clearPixFile} className="text-xs text-zinc-400 hover:underline">Remove</button>
+                        )}
+                        <button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>
+                      </div>
+                    }
+                  >
                     <div
                       onDrop={onDrop}
                       onDragOver={(e) => e.preventDefault()}
@@ -195,7 +215,17 @@ export default function CartoonStudio() {
                   exit={{ opacity: 0, y: -8 }}
                   className="space-y-5"
                 >
-                  <Field label="Upload image (drag & drop supported)" right={<button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>}>
+                  <Field
+                    label="Upload image (drag & drop supported)"
+                    right={
+                      <div className="flex items-center gap-3">
+                        {cyclicFile && (
+                          <button onClick={clearCyclicFile} className="text-xs text-zinc-400 hover:underline">Remove</button>
+                        )}
+                        <button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>
+                      </div>
+                    }
+                  >
                     <div
                       onDrop={onDrop}
                       onDragOver={(e) => e.preventDefault()}
