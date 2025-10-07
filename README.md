@@ -11,3 +11,11 @@ Allow users to turn their images into cartoon images. See full techspec here: [h
 ## Quick Start
 ### 1. Run Frontend:
 `npm run dev`
+
+## Google Colab Notebooks
+For developing our models, we used an A100 GPU on Google Colab. Here are the links to view them...
+
+### Pix2Pix
+
+### CyclicGAN
+https://colab.research.google.com/drive/1KO5kDbc-HDjUuEwroOFE-lf4Aiof9GaG?usp=sharing
