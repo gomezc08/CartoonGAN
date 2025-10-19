@@ -1,19 +1,18 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, ImagePlus, Sparkles, Wand2, Download, Trash2, Loader2, Camera } from "lucide-react";
-import { textToCartoon, imageToCartoon } from "./lib/Api";
+import { Upload, ImagePlus, Sparkles, Download, Trash2, Camera } from "lucide-react";
+import { pix2Pix, cyclicGANImage } from "./lib/api";
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// Utility placeholder (unused) removed
 
-async function mockGenerateFromImage(_file: File, _opts: any) {
-  const response = await imageToCartoon(_file);
-  return URL.createObjectURL(_file); // Echoes the uploaded image as a preview placeholder
+async function generatePix2Pix(_file: File) {
+  await pix2Pix(_file);
+  return URL.createObjectURL(_file);
 }
 
-async function mockGenerateFromText(_prompt: string, _opts: any) {
-  const response = await textToCartoon(_prompt);
-  // Placeholder: a data URL  transparent PNG (1x1). Replace with real output.
-  return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
+async function generateCyclicGANImage(_file: File) {
+  await cyclicGANImage(_file);
+  return URL.createObjectURL(_file);
 }
 
 // ------------------------ UI Controls ------------------------
@@ -45,48 +44,63 @@ const Field: React.FC<{ label: string; children: React.ReactNode; right?: React.
 
 // ------------------------ Main Component ------------------------
 export default function CartoonStudio() {
-  const [tab, setTab] = useState<"img2img" | "txt2img">("img2img");
+  const [tab, setTab] = useState<"pix_img2img" | "cyclic_img2img">("pix_img2img");
   const [results, setResults] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // img2img
-  const [file, setFile] = useState<File | null>(null);
-
-  // txt2img
-  const [prompt, setPrompt] = useState("");
+  // Separate files per tab
+  const [pixFile, setPixFile] = useState<File | null>(null);
+  const [cyclicFile, setCyclicFile] = useState<File | null>(null);
 
   // shared - removed style, size, seed controls
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pixFileInputRef = useRef<HTMLInputElement>(null);
+  const cyclicFileInputRef = useRef<HTMLInputElement>(null);
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0];
-    if (f && f.type.startsWith("image")) setFile(f);
+    if (f && f.type.startsWith("image")) {
+      if (tab === "pix_img2img") setPixFile(f);
+      if (tab === "cyclic_img2img") setCyclicFile(f);
+    }
   };
 
-  const onBrowse = () => fileInputRef.current?.click();
+  const onBrowse = () => {
+    if (tab === "pix_img2img") pixFileInputRef.current?.click();
+    if (tab === "cyclic_img2img") cyclicFileInputRef.current?.click();
+  };
+
+  const clearPixFile = () => {
+    setPixFile(null);
+    if (pixFileInputRef.current) pixFileInputRef.current.value = "";
+  };
+
+  const clearCyclicFile = () => {
+    setCyclicFile(null);
+    if (cyclicFileInputRef.current) cyclicFileInputRef.current.value = "";
+  };
 
   const removeResult = (idx: number) => setResults((r) => r.filter((_, i) => i !== idx));
 
-  const commonOpts = useMemo(() => ({}), []);
+  // No shared options currently
 
   async function handleGenerate() {
     try {
       setLoading(true);
       let url = "";
-      if (tab === "img2img") {
-        if (!file) {
+      if (tab === "pix_img2img") {
+        if (!pixFile) {
           alert("Please upload an image first.");
           return;
         }
-        url = await mockGenerateFromImage(file, { ...commonOpts });
+        url = await generatePix2Pix(pixFile);
       } else {
-        if (!prompt.trim()) {
-          alert("Please enter a prompt first.");
+        if (!cyclicFile) {
+          alert("Please upload an image first.");
           return;
         }
-        url = await mockGenerateFromText(prompt, { ...commonOpts });
+        url = await generateCyclicGANImage(cyclicFile);
       }
       setResults((r) => [url, ...r]);
     } catch (e) {
@@ -108,16 +122,16 @@ export default function CartoonStudio() {
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <TabBtn
-            active={tab === "img2img"}
-            onClick={() => setTab("img2img")}
+            active={tab === "pix_img2img"}
+            onClick={() => setTab("pix_img2img")}
             icon={<ImagePlus className="h-4 w-4" />}
-            label="Image → Cartoon"
+            label="Pix2Pix"
           />
           <TabBtn
-            active={tab === "txt2img"}
-            onClick={() => setTab("txt2img")}
-            icon={<Wand2 className="h-4 w-4" />}
-            label="Text → Cartoon"
+            active={tab === "cyclic_img2img"}
+            onClick={() => setTab("cyclic_img2img")}
+            icon={<ImagePlus className="h-4 w-4" />}
+            label="CyclicGAN"
           />
         </div>
       </header>
@@ -131,19 +145,29 @@ export default function CartoonStudio() {
             className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-10 shadow-xl shadow-black/30 backdrop-blur"
           >
             <div className="mb-5">
-              <h2 className="text-lg font-semibold">{tab === "img2img" ? "Image to Cartoon" : "Text to Cartoon"}</h2>
+              <h2 className="text-lg font-semibold">{tab === "pix_img2img" ? "Pix2Pix (img→img)" : "CyclicGAN (img→img)"}</h2>
             </div>
 
             <AnimatePresence mode="wait">
-              {tab === "img2img" ? (
+              {tab === "pix_img2img" ? (
                 <motion.div
-                  key="img2img"
+                  key="pix_img2img"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   className="space-y-5"
                 >
-                  <Field label="Upload image (drag & drop supported)" right={<button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>}>
+                  <Field
+                    label="Upload image (drag & drop supported)"
+                    right={
+                      <div className="flex items-center gap-3">
+                        {pixFile && (
+                          <button onClick={clearPixFile} className="text-xs text-zinc-400 hover:underline">Remove</button>
+                        )}
+                        <button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>
+                      </div>
+                    }
+                  >
                     <div
                       onDrop={onDrop}
                       onDragOver={(e) => e.preventDefault()}
@@ -151,18 +175,18 @@ export default function CartoonStudio() {
                       onClick={onBrowse}
                     >
                       <input
-                        ref={fileInputRef}
+                        ref={pixFileInputRef}
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                        onChange={(e) => setPixFile(e.target.files?.[0] ?? null)}
                       />
-                      {file ? (
+                      {pixFile ? (
                         <div className="flex w-full items-center gap-4">
-                          <img src={URL.createObjectURL(file)} alt="preview" className="h-20 w-20 rounded-lg object-cover" />
+                          <img src={URL.createObjectURL(pixFile)} alt="preview" className="h-20 w-20 rounded-lg object-cover" />
                           <div className="text-left">
-                            <p className="text-sm font-medium">{file.name}</p>
-                            <p className="text-xs text-zinc-400">{Math.round(file.size / 1024)} KB</p>
+                            <p className="text-sm font-medium">{pixFile.name}</p>
+                            <p className="text-xs text-zinc-400">{Math.round(pixFile.size / 1024)} KB</p>
                           </div>
                         </div>
                       ) : (
@@ -173,40 +197,77 @@ export default function CartoonStudio() {
                       )}
                     </div>
                   </Field>
+                  <div className="pt-2">
+                    <button
+                      disabled={loading}
+                      onClick={handleGenerate}
+                      className="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-500 disabled:opacity-60"
+                    >
+                      Generate
+                    </button>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div
-                  key="txt2img"
+                  key="cyclic_img2img"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   className="space-y-5"
                 >
-                  <Field label="Describe the cartoon you want">
-                    <textarea
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="e.g., a couple holding hands and taking a selfie with the GWU logo in the background"
-                      className="min-h-[110px] w-full resize-y rounded-xl border border-zinc-700 bg-zinc-950/40 p-3 text-sm outline-none ring-pink-600/30 placeholder:text-zinc-500 focus:ring-2"
-                    />
+                  <Field
+                    label="Upload image (drag & drop supported)"
+                    right={
+                      <div className="flex items-center gap-3">
+                        {cyclicFile && (
+                          <button onClick={clearCyclicFile} className="text-xs text-zinc-400 hover:underline">Remove</button>
+                        )}
+                        <button onClick={onBrowse} className="text-xs text-pink-400 hover:underline">Browse</button>
+                      </div>
+                    }
+                  >
+                    <div
+                      onDrop={onDrop}
+                      onDragOver={(e) => e.preventDefault()}
+                      className="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-zinc-700 bg-zinc-950/40 p-6 text-center hover:border-pink-600/60"
+                      onClick={onBrowse}
+                    >
+                      <input
+                        ref={cyclicFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => setCyclicFile(e.target.files?.[0] ?? null)}
+                      />
+                      {cyclicFile ? (
+                        <div className="flex w-full items-center gap-4">
+                          <img src={URL.createObjectURL(cyclicFile)} alt="preview" className="h-20 w-20 rounded-lg object-cover" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium">{cyclicFile.name}</p>
+                            <p className="text-xs text-zinc-400">{Math.round(cyclicFile.size / 1024)} KB</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-zinc-400">
+                          <Upload className="h-6 w-6" />
+                          <p className="text-sm">Drop an image here or click to upload</p>
+                        </div>
+                      )}
+                    </div>
                   </Field>
+                  <div className="pt-2">
+                    <button
+                      disabled={loading}
+                      onClick={handleGenerate}
+                      className="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-500 disabled:opacity-60"
+                    >
+                      Generate
+                    </button>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
-
-            <div className="mt-6 flex items-center justify-between gap-3">
-              <button
-                onClick={handleGenerate}
-                disabled={loading}
-                className="inline-flex items-center gap-2 rounded-2xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-pink-600/30 transition hover:bg-pink-500 disabled:opacity-60"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                Generate
-              </button>
-              <div className="text-xs text-zinc-400">Outputs appear on the right →</div>
-            </div>
-          </motion.div>
+        </motion.div>
         </section>
 
           {/* RIGHT: Results Gallery */}
