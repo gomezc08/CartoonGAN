@@ -10,7 +10,7 @@ from image_utils import tensor_to_image, image_to_base64, save_image
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BACKEND_DIR, "models")
 
-def generate_cyclic_gan_cartoon():
+def generate_cyclic_gan_cartoon(preprocessed_image=None):
     """
     Generate a cartoon image using the CyclicGAN model.
     
@@ -22,12 +22,12 @@ def generate_cyclic_gan_cartoon():
         RuntimeError: If there's an error during model loading or inference
     """
     try:
-        # Load the preprocessed image
-        preprocessed_path = os.path.join(BACKEND_DIR, "preprocessed_image.npy")
-        if not os.path.exists(preprocessed_path):
-            raise FileNotFoundError("Preprocessed image file not found. Run preprocess_image.py first.")
-        
-        preprocessed_image = np.load(preprocessed_path)
+        # Use provided tensor or load from disk
+        if preprocessed_image is None:
+            preprocessed_path = os.path.join(BACKEND_DIR, "preprocessed_image.npy")
+            if not os.path.exists(preprocessed_path):
+                raise FileNotFoundError("Preprocessed image file not found. Run preprocess_image.py first.")
+            preprocessed_image = np.load(preprocessed_path)
         
         # Load cyclic gan model
         model_path = os.path.join(MODELS_DIR, "cyclic_gan_generator_g_model.keras")
@@ -56,7 +56,7 @@ def generate_cyclic_gan_cartoon():
     except Exception as e:
         raise RuntimeError(f"Error generating CyclicGAN cartoon: {str(e)}")
 
-def generate_pix2pix_cartoon():
+def generate_pix2pix_cartoon(preprocessed_image=None):
     """
     Generate a cartoon image using the Pix2Pix model.
     
@@ -68,12 +68,12 @@ def generate_pix2pix_cartoon():
         RuntimeError: If there's an error during model loading or inference
     """
     try:
-        # Load the preprocessed image
-        preprocessed_path = os.path.join(BACKEND_DIR, "preprocessed_image.npy")
-        if not os.path.exists(preprocessed_path):
-            raise FileNotFoundError("Preprocessed image file not found. Run preprocess_image.py first.")
-            
-        preprocessed_image = np.load(preprocessed_path)
+        # Use provided tensor or load from disk
+        if preprocessed_image is None:
+            preprocessed_path = os.path.join(BACKEND_DIR, "preprocessed_image.npy")
+            if not os.path.exists(preprocessed_path):
+                raise FileNotFoundError("Preprocessed image file not found. Run preprocess_image.py first.")
+            preprocessed_image = np.load(preprocessed_path)
         
         # Load pix2pix model
         model_path = os.path.join(MODELS_DIR, "pix2pix_generator_model.keras")
