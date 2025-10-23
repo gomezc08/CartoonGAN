@@ -6,13 +6,15 @@ import { pix2Pix, cyclicGANImage } from "./lib/api";
 // Utility placeholder (unused) removed
 
 async function generatePix2Pix(_file: File) {
-  await pix2Pix(_file);
-  return URL.createObjectURL(_file);
+  const response = await pix2Pix(_file);
+  // The response already includes the data URL prefix
+  return response.cartoonImage;
 }
 
 async function generateCyclicGANImage(_file: File) {
-  await cyclicGANImage(_file);
-  return URL.createObjectURL(_file);
+  const response = await cyclicGANImage(_file);
+  // The response already includes the data URL prefix
+  return response.cartoonImage;
 }
 
 // ------------------------ UI Controls ------------------------
