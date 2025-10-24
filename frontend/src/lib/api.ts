@@ -1,10 +1,13 @@
 export async function pix2Pix(image: File) {
-    const cartoonImage = `Cartoonize the following image: ${image.name}`;
-    console.log("Generating the following image to cartoon:", cartoonImage);
-    const response = await fetch("/api/generate_cartoon/image", {
+    console.log("Generating the following image to cartoon:", image.name);
+    
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("description", `Cartoonize the following image: ${image.name}`);
+    
+    const response = await fetch("/api/generate_cartoon/pix2pix", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartoonImage })
+        body: formData
     });
     if (!response.ok) throw new Error("Generate image to cartoon failed");
     return response.json();
@@ -12,12 +15,15 @@ export async function pix2Pix(image: File) {
 
 // CyclicGAN image-to-image variant
 export async function cyclicGANImage(image: File) {
-    const cyclicImageDescriptor = `CyclicGAN cartoonize image: ${image.name}`;
-    console.log("Generating (CyclicGAN) image to cartoon:", cyclicImageDescriptor);
+    console.log("Generating (CyclicGAN) image to cartoon:", image.name);
+    
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("description", `CyclicGAN cartoonize image: ${image.name}`);
+    
     const response = await fetch("/api/generate_cartoon/cyclic_image", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cyclicImageDescriptor })
+        body: formData
     });
     if (!response.ok) throw new Error("CyclicGAN image to cartoon failed");
     return response.json();
