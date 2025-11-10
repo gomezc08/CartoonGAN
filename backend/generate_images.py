@@ -80,9 +80,14 @@ def generate_pix2pix_cartoon(preprocessed_image=None):
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Pix2Pix model not found at {model_path}")
             
-        # Load model with custom objects
-        custom_objects = {'InstanceNormalization': InstanceNormalization}
-        pix2pix_generator = keras.models.load_model(model_path, custom_objects=custom_objects)
+        # Load model - try with custom objects first, fallback to without if not needed
+        try:
+            custom_objects = {'InstanceNormalization': InstanceNormalization}
+            pix2pix_generator = keras.models.load_model(model_path, custom_objects=custom_objects)
+        except (KeyError, ValueError) as e:
+            # Model might not use InstanceNormalization, try loading without it
+            print(f"Warning: Could not load with InstanceNormalization, trying without: {str(e)}")
+            pix2pix_generator = keras.models.load_model(model_path)
         
         # Generate the pix2pix image
         pix2pix_image = pix2pix_generator(preprocessed_image)
@@ -100,6 +105,10 @@ def generate_pix2pix_cartoon(preprocessed_image=None):
         }
         
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Error generating Pix2Pix cartoon: {str(e)}")
+        print(f"Full traceback: {error_details}")
         raise RuntimeError(f"Error generating Pix2Pix cartoon: {str(e)}")
 
 # Test the functions

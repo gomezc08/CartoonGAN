@@ -191,6 +191,10 @@ async def generate_pix2pix_cartoon_endpoint(
         }
         
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Pix2Pix Error: {str(e)}")
+        print(f"Traceback: {error_details}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/generate_cartoon/cycle_image")
