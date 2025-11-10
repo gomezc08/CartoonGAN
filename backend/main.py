@@ -13,7 +13,7 @@ import numpy as np
 from typing import Optional, List, Dict
 
 from preprocess_image import preprocess_image_for_inference
-from generate_images import generate_cyclic_gan_cartoon, generate_pix2pix_cartoon
+from generate_images import generate_cycle_gan_cartoon, generate_pix2pix_cartoon
 from image_utils import array_to_base64
 
 # Get the absolute path to the Backend files directory
@@ -38,11 +38,11 @@ app.add_middleware(
 # Models for request/response
 class Base64Image(BaseModel):
     image: str
-    models: Optional[List[str]] = ["pix2pix", "cyclic_gan"]
+    models: Optional[List[str]] = ["pix2pix", "cycle_gan"]
 
 class CartoonResponse(BaseModel):
     pix2pix_image: Optional[str] = None
-    cyclic_gan_image: Optional[str] = None
+    cycle_gan_image: Optional[str] = None
     message: str
 
 def process_base64_image(base64_string: str) -> np.ndarray:
@@ -98,7 +98,7 @@ async def cartoonize_base64(request: Base64Image):
     Convert a base64 encoded image to cartoon style.
     
     - **image**: Base64 encoded image string (with or without data URL prefix)
-    - **models**: List of models to use (default: ["pix2pix", "cyclic_gan"])
+    - **models**: List of models to use (default: ["pix2pix", "cycle_gan"])
     
     Returns cartoon versions from specified models.
     """
@@ -106,16 +106,16 @@ async def cartoonize_base64(request: Base64Image):
         # Process the base64 image
         preprocessed_image = process_base64_image(request.image)
         
-        response = {"message": "Success", "pix2pix_image": None, "cyclic_gan_image": None}
+        response = {"message": "Success", "pix2pix_image": None, "cycle_gan_image": None}
         
         # Defensive: ensure models is a list
-        models = request.models if request.models is not None else ["pix2pix", "cyclic_gan"]
+        models = request.models if request.models is not None else ["pix2pix", "cycle_gan"]
         if "pix2pix" in models:
             result = generate_pix2pix_cartoon(preprocessed_image)
             response["pix2pix_image"] = result["base64"]
-        if "cyclic_gan" in models:
-            result = generate_cyclic_gan_cartoon(preprocessed_image)
-            response["cyclic_gan_image"] = result["base64"]
+        if "cycle_gan" in models:
+            result = generate_cycle_gan_cartoon(preprocessed_image)
+            response["cycle_gan_image"] = result["base64"]
         return response
         
     except Exception as e:
@@ -124,13 +124,13 @@ async def cartoonize_base64(request: Base64Image):
 @app.post("/cartoonize/upload", response_model=CartoonResponse)
 async def cartoonize_upload(
     file: UploadFile = File(...),
-    models: Optional[List[str]] = ["pix2pix", "cyclic_gan"]
+    models: Optional[List[str]] = ["pix2pix", "cycle_gan"]
 ):
     """
     Convert an uploaded image to cartoon style.
     
     - **file**: The image file to convert
-    - **models**: List of models to use (default: ["pix2pix", "cyclic_gan"])
+    - **models**: List of models to use (default: ["pix2pix", "cycle_gan"])
     
     Returns cartoon versions from specified models.
     """
@@ -142,16 +142,16 @@ async def cartoonize_upload(
         # Process the uploaded file
         preprocessed_image = process_upload_file(file)
         
-        response = {"message": "Success", "pix2pix_image": None, "cyclic_gan_image": None}
+        response = {"message": "Success", "pix2pix_image": None, "cycle_gan_image": None}
         
         # Defensive: ensure models is a list
-        models = models if models is not None else ["pix2pix", "cyclic_gan"]
+        models = models if models is not None else ["pix2pix", "cycle_gan"]
         if "pix2pix" in models:
             result = generate_pix2pix_cartoon(preprocessed_image)
             response["pix2pix_image"] = result["base64"]
-        if "cyclic_gan" in models:
-            result = generate_cyclic_gan_cartoon(preprocessed_image)
-            response["cyclic_gan_image"] = result["base64"]
+        if "cycle_gan" in models:
+            result = generate_cycle_gan_cartoon(preprocessed_image)
+            response["cycle_gan_image"] = result["base64"]
         return response
         
     except Exception as e:
@@ -193,13 +193,13 @@ async def generate_pix2pix_cartoon_endpoint(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/generate_cartoon/cyclic_image")
-async def generate_cyclic_cartoon_endpoint(
+@app.post("/api/generate_cartoon/cycle_image")
+async def generate_cycle_cartoon_endpoint(
     file: UploadFile = File(...),
     description: Optional[str] = None
 ):
     """
-    Convert an uploaded image to cartoon style using CyclicGAN model.
+    Convert an uploaded image to cartoon style using cycleGAN model.
     
     - **file**: The image file to convert
     - **description**: Optional description of the image (for logging)
@@ -207,7 +207,7 @@ async def generate_cyclic_cartoon_endpoint(
     Returns cartoon version in base64 format.
     """
     try:
-        print(f"Processing CyclicGAN request for: {description or file.filename}")
+        print(f"Processing cycleGAN request for: {description or file.filename}")
         
         # Validate file type
         if not file.content_type or not file.content_type.startswith("image/"):
@@ -219,7 +219,7 @@ async def generate_cyclic_cartoon_endpoint(
         # Save for debugging/testing
         np.save(os.path.join(BACKEND_DIR, "preprocessed_image.npy"), preprocessed_image)
         
-        result = generate_cyclic_gan_cartoon(preprocessed_image)
+        result = generate_cycle_gan_cartoon(preprocessed_image)
         
         return {
             "cartoonImage": result["base64"],

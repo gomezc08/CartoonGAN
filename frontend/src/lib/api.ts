@@ -13,18 +13,18 @@ export async function pix2Pix(image: File) {
     return response.json();
 }
 
-// CyclicGAN image-to-image variant
-export async function cyclicGANImage(image: File) {
-    console.log("Generating (CyclicGAN) image to cartoon:", image.name);
+// cycleGAN image-to-image variant
+export async function cycleGANImage(image: File) {
+    console.log("Generating (cycleGAN) image to cartoon:", image.name);
     
     const formData = new FormData();
     formData.append("file", image);
-    formData.append("description", `CyclicGAN cartoonize image: ${image.name}`);
+    formData.append("description", `cycleGAN cartoonize image: ${image.name}`);
     
-    const response = await fetch("/api/generate_cartoon/cyclic_image", {
+    const response = await fetch("/api/generate_cartoon/cycle_image", {
         method: "POST",
         body: formData
     });
-    if (!response.ok) throw new Error("CyclicGAN image to cartoon failed");
+    if (!response.ok) throw new Error("cycleGAN image to cartoon failed");
     return response.json();
 }

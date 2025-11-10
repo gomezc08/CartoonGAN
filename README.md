@@ -2,6 +2,12 @@
 
 Allow users to turn their images into cartoon images. See full techspec here: [https://docs.google.com/document/d/1EDiuOM7pzMlwyO4g-ZQU2VtMs2yAtt-3llWDrcgQpJQ/edit?usp=sharing](https://docs.google.com/document/d/1iprGaKx4DIpROkuvtuIHND9XW9GibiCqs7uuzehG4FY/edit?usp=sharing)
 
+## Importing Models
+Download the pix2pix and cycleGAN model and add them to `backend/models` by running the following Google Colab Notebooks:
+- **pix2pix_generator_model:** [Pix2Pix Model](https://colab.research.google.com/drive/1MxThv4SazSCjcm8Zc8WkA6PDHhBPJLCm?usp=sharing)
+- **cycle_gan_generator_g_model:** [CycleGAN Model](https://colab.research.google.com/drive/1KO5kDbc-HDjUuEwroOFE-lf4Aiof9GaG?usp=sharing)
+
+
 ## Prerequisites
 - Node.js: Download here: https://nodejs.org/en 
     - node -v >= 22.19.0
