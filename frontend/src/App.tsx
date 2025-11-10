@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, ImagePlus, Sparkles, Download, Trash2, Camera } from "lucide-react";
+import { Upload, ImagePlus, Sparkles, Download, Trash2, Camera, Loader2 } from "lucide-react";
 import { pix2Pix, cyclicGANImage } from "./lib/api";
 
 // Utility placeholder (unused) removed
@@ -203,9 +203,19 @@ export default function CartoonStudio() {
                     <button
                       disabled={loading}
                       onClick={handleGenerate}
-                      className="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-500 disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
                     >
-                      Generate
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4" />
+                          Generate
+                        </>
+                      )}
                     </button>
                   </div>
                 </motion.div>
@@ -261,9 +271,19 @@ export default function CartoonStudio() {
                     <button
                       disabled={loading}
                       onClick={handleGenerate}
-                      className="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-500 disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
                     >
-                      Generate
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4" />
+                          Generate
+                        </>
+                      )}
                     </button>
                   </div>
                 </motion.div>
