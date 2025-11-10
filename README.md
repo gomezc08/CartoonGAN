@@ -8,14 +8,43 @@ Allow users to turn their images into cartoon images. See full techspec here: [h
     - npm -v >= 11.6.0
 - Python: Python 3.8+ with pip
 
+## Installation
+
+1. Install Node.js dependencies:
+   ```bash
+   npm install
+   cd frontend && npm install && cd ..
+   ```
+
+2. Install Python dependencies:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
 ## Quick Start
-### 1. Run Frontend:
-`npm run dev`
 
-## Google Colab Notebooks
-For developing our models, we used an A100 GPU on Google Colab. Here are the links to view them...
+### Run the Application
 
-### Pix2Pix
+The easiest way to run both frontend and backend together:
 
-### CyclicGAN
-https://colab.research.google.com/drive/1KO5kDbc-HDjUuEwroOFE-lf4Aiof9GaG?usp=sharing
+```bash
+npm run dev
+```
+
+This will start:
+- Frontend server on `http://localhost:5173`
+- Backend API server on `http://localhost:8000`
+
+### Alternative: Run Servers Separately
+
+If `npm run dev` fails, you can run the servers in separate terminals:
+
+**Terminal 1 - Backend:**
+```bash
+npm run dev:backend
+```
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev:frontend
+```
