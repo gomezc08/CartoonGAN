@@ -1,10 +1,10 @@
 # Generating Cartoon Images API
-This section describes how the backend is structured and how to use the models (pix2pix and cyclic_gan) for inference as well as the Inferencing API built using FastAPI.  
+This section describes how the backend is structured and how to use the models (pix2pix and cycle_gan) for inference as well as the Inferencing API built using FastAPI.  
 
 # Scripts description 
 **generate_Images.py** This script contains the actual inference logic. it accepts it contains the functions that takes the input image and generate the corresponding cartoon image. 
 
-**Custom_layers.py** This script contain the custom layer `instanceNormalization` used in cyclic_gan
+**Custom_layers.py** This script contain the custom layer `instanceNormalization` used in cycle_gan
 
 **preprocess_image.py** This script is the first script in the pipeline. it returns the input image as a tensor with a batch dimension. the returned tensor is passed to the generator models in generate_images.py
 

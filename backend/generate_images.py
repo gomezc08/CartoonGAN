@@ -10,9 +10,9 @@ from image_utils import tensor_to_image, image_to_base64, save_image
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BACKEND_DIR, "models")
 
-def generate_cyclic_gan_cartoon(preprocessed_image=None):
+def generate_cycle_gan_cartoon(preprocessed_image=None):
     """
-    Generate a cartoon image using the CyclicGAN model.
+    Generate a cartoon image using the cycleGAN model.
     
     Returns:
         tf.Tensor: The generated cartoon image
@@ -29,32 +29,32 @@ def generate_cyclic_gan_cartoon(preprocessed_image=None):
                 raise FileNotFoundError("Preprocessed image file not found. Run preprocess_image.py first.")
             preprocessed_image = np.load(preprocessed_path)
         
-        # Load cyclic gan model
-        model_path = os.path.join(MODELS_DIR, "cyclic_gan_generator_g_model.keras")
+        # Load cycle gan model
+        model_path = os.path.join(MODELS_DIR, "cycle_gan_generator_g_model.keras")
         if not os.path.exists(model_path):
-            raise FileNotFoundError(f"CyclicGAN model not found at {model_path}")
+            raise FileNotFoundError(f"cycleGAN model not found at {model_path}")
             
         # Load model with custom objects
         custom_objects = {'InstanceNormalization': InstanceNormalization}
-        cyclic_gan_generator = keras.models.load_model(model_path, custom_objects=custom_objects)
+        cycle_gan_generator = keras.models.load_model(model_path, custom_objects=custom_objects)
         
-        # Generate the cyclic gan image
-        cyclic_gan_image = cyclic_gan_generator(preprocessed_image)
+        # Generate the cycle gan image
+        cycle_gan_image = cycle_gan_generator(preprocessed_image)
         
         # Convert to PIL Image
-        pil_image = tensor_to_image(cyclic_gan_image)
+        pil_image = tensor_to_image(cycle_gan_image)
         
         # Convert to base64 for web display
         base64_image = image_to_base64(pil_image, format='PNG')
         
         return {
-            'tensor': cyclic_gan_image,
+            'tensor': cycle_gan_image,
             'base64': base64_image,
             'pil_image': pil_image
         }
         
     except Exception as e:
-        raise RuntimeError(f"Error generating CyclicGAN cartoon: {str(e)}")
+        raise RuntimeError(f"Error generating cycleGAN cartoon: {str(e)}")
 
 def generate_pix2pix_cartoon(preprocessed_image=None):
     """
@@ -80,9 +80,14 @@ def generate_pix2pix_cartoon(preprocessed_image=None):
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Pix2Pix model not found at {model_path}")
             
-        # Load model with custom objects
-        custom_objects = {'InstanceNormalization': InstanceNormalization}
-        pix2pix_generator = keras.models.load_model(model_path, custom_objects=custom_objects)
+        # Load model - try with custom objects first, fallback to without if not needed
+        try:
+            custom_objects = {'InstanceNormalization': InstanceNormalization}
+            pix2pix_generator = keras.models.load_model(model_path, custom_objects=custom_objects)
+        except (KeyError, ValueError) as e:
+            # Model might not use InstanceNormalization, try loading without it
+            print(f"Warning: Could not load with InstanceNormalization, trying without: {str(e)}")
+            pix2pix_generator = keras.models.load_model(model_path)
         
         # Generate the pix2pix image
         pix2pix_image = pix2pix_generator(preprocessed_image)
@@ -100,21 +105,25 @@ def generate_pix2pix_cartoon(preprocessed_image=None):
         }
         
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Error generating Pix2Pix cartoon: {str(e)}")
+        print(f"Full traceback: {error_details}")
         raise RuntimeError(f"Error generating Pix2Pix cartoon: {str(e)}")
 
 # Test the functions
 if __name__ == "__main__":
     try:
         pix2pix_result = generate_pix2pix_cartoon()
-        cyclic_gan_result = generate_cyclic_gan_cartoon()
+        cycle_gan_result = generate_cycle_gan_cartoon()
         
         # Save the tensors
         np.save(os.path.join(BACKEND_DIR, "pix2pix_cartoon.npy"), pix2pix_result['tensor'].numpy())
-        np.save(os.path.join(BACKEND_DIR, "cyclic_gan_cartoon.npy"), cyclic_gan_result['tensor'].numpy())
+        np.save(os.path.join(BACKEND_DIR, "cycle_gan_cartoon.npy"), cycle_gan_result['tensor'].numpy())
         
         # Save the images in PNG format
         save_image(pix2pix_result['pil_image'], os.path.join(BACKEND_DIR, "pix2pix_cartoon.png"))
-        save_image(cyclic_gan_result['pil_image'], os.path.join(BACKEND_DIR, "cyclic_gan_cartoon.png"))
+        save_image(cycle_gan_result['pil_image'], os.path.join(BACKEND_DIR, "cycle_gan_cartoon.png"))
         
         print("Successfully generated and saved cartoon images in both .npy and .png formats.")
         
