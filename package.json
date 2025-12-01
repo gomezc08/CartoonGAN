@@ -11,6 +11,7 @@
     "lint": "npm --prefix frontend run lint"
   },
   "devDependencies": {
+    "baseline-browser-mapping": "^2.8.32",
     "concurrently": "^8.2.2"
   }
 }

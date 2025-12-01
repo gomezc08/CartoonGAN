@@ -1,11 +1,14 @@
 """
 CartoonGAN API - FastAPI backend for converting photos to cartoon-style images.
 """
+import os
+# Disable oneDNN optimizations to suppress TensorFlow warning
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import os
 import base64
 from io import BytesIO
 from PIL import Image

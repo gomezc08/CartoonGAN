@@ -1,4 +1,6 @@
 import os
+# Disable oneDNN optimizations to suppress TensorFlow warning
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import numpy as np
 from PIL import Image
 import tensorflow as tf
