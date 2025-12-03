@@ -96,11 +96,6 @@ path = os.path.join(path_to_dataset, "face2comics_v2.0.0_by_Sxela/face2comics_v2
 photo_dir = os.path.join(path, "faces")
 comic_dir = os.path.join(path, "comics")
 
-"""## Visualize some of them"""
-
-all_photo_files = list((i for i in sorted(os.listdir(photo_dir))))
-all_comic_files = list((i for i in sorted(os.listdir(comic_dir))))
-
 # Split into train/test (80/20 split used in the tutorials)
 train_photo_files, test_photo_files = train_test_split(
     all_photo_files, test_size=0.2, random_state=42
@@ -134,38 +129,6 @@ train_comics = tf.data.Dataset.from_tensor_slices(train_comic_paths).map(
 test_comics = tf.data.Dataset.from_tensor_slices(test_comic_paths).map(
     load_image, num_parallel_calls=tf.data.AUTOTUNE
 )
-
-# Number of samples to visualize
-n_samples = 5
-
-# Get samples from the datasets
-train_faces_samples = list(train_faces.take(n_samples))
-train_comics_samples = list(train_comics.take(n_samples))
-
-# Create subplot grid
-fig, axes = plt.subplots(2, n_samples, figsize=(20, 8))
-
-# Plot faces (row 0)
-for i, img in enumerate(train_faces_samples):
-    # Convert to numpy and ensure uint8 format
-    img_array = img.numpy().astype('uint8')
-
-    axes[0, i].imshow(img_array)
-    axes[0, i].set_title(f"Face {i+1}")
-    axes[0, i].axis("off")
-
-# Plot comics (row 1)
-for i, img in enumerate(train_comics_samples):
-    # Convert to numpy and ensure uint8 format
-    img_array = img.numpy().astype('uint8')
-
-    axes[1, i].imshow(img_array)
-    axes[1, i].set_title(f"Comic {i+1}")
-    axes[1, i].axis("off")
-
-plt.suptitle("Training Dataset Samples", fontsize=16, y=1.02)
-plt.tight_layout()
-plt.show()
 
 """# 3. Preprocess Training Data
 
@@ -230,22 +193,6 @@ test_comics = test_comics.map(
 sample_face = next(iter(train_faces))
 sample_comic = next(iter(train_comics))
 
-plt.subplot(121)
-plt.title('Face')
-plt.imshow(sample_face[0] * 0.5 + 0.5)
-
-plt.subplot(122)
-plt.title('Face with random jitter')
-plt.imshow(random_jitter(sample_face[0]) * 0.5 + 0.5)
-
-plt.subplot(121)
-plt.title('Comic')
-plt.imshow(sample_comic[0] * 0.5 + 0.5)
-
-plt.subplot(122)
-plt.title('Comic with random jitter')
-plt.imshow(random_jitter(sample_comic[0]) * 0.5 + 0.5)
-
 """# 4. Define Generators and Discriminators
 
 We didn't want to focus this notebook on creating the same models, so we just pretty much grabbed the same generators and discriminators used in pix2pix. For more detail on each Neural Network, see our pix2pix notebook
@@ -263,30 +210,6 @@ to_comic = generator_g(sample_comic)
 to_face = generator_f(sample_face)
 plt.figure(figsize=(8, 8))
 contrast = 8
-
-imgs = [sample_face, to_comic, sample_comic, to_face]
-title = ['Face', 'To Comic', 'Comic', 'To Face']
-
-for i in range(len(imgs)):
-  plt.subplot(2, 2, i+1)
-  plt.title(title[i])
-  if i % 2 == 0:
-    plt.imshow(imgs[i][0] * 0.5 + 0.5)
-  else:
-    plt.imshow(imgs[i][0] * 0.5 * contrast + 0.5)
-plt.show()
-
-plt.figure(figsize=(8, 8))
-
-plt.subplot(121)
-plt.title('Is a real comic?')
-plt.imshow(discriminator_y(sample_comic)[0, ..., -1], cmap='RdBu_r')
-
-plt.subplot(122)
-plt.title('Is a real face?')
-plt.imshow(discriminator_x(sample_comic)[0, ..., -1], cmap='RdBu_r')
-
-plt.show()
 
 """Unlike the pix2pix, we don't want any influence from real and generated loss; thus, we define lambda as 1"""
 

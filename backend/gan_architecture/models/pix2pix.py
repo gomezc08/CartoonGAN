@@ -89,50 +89,12 @@ path = os.path.join(path_to_dataset, "face2comics_v2.0.0_by_Sxela/face2comics_v2
 photo_dir = os.path.join(path, "faces")
 comic_dir = os.path.join(path, "comics")
 
-"""## Visualize some of them"""
 
 all_photo_files = list((i for i in sorted(os.listdir(photo_dir))))
 all_comic_files = list((i for i in sorted(os.listdir(comic_dir))))
 
 photo_files = all_photo_files[:5]
 comic_files = all_comic_files[:5]
-
-# Create subplot grid
-fig, axes = plt.subplots(1, len(photo_files) * 2, figsize=(20, 4))
-
-# Handle case where there's only one pair
-if len(photo_files) == 1:
-    axes = [axes]
-
-for i, fname in enumerate(photo_files[:5]):
-    photo_path = os.path.join(photo_dir, fname)
-    comic_path = os.path.join(comic_dir, fname)
-
-    photo = Image.open(photo_path).convert("RGB")
-    comic = Image.open(comic_path).convert("RGB")
-
-    axes[2*i].imshow(photo)
-    axes[2*i].set_title(f"Original {i+1}")
-    axes[2*i].axis("off")
-
-    axes[2*i+1].imshow(comic)
-    axes[2*i+1].set_title(f"Comic {i+1}")
-    axes[2*i+1].axis("off")
-
-plt.tight_layout()
-plt.show()
-
-"""## Perform Datachecks and representation."""
-
-photo_path = os.path.join(photo_dir, photo_files[0])
-photo = Image.open(photo_path).convert("RGB")
-# convert to numpy array
-photo = np.array(photo)
-
-# verify the size
-print(f'photo size: {photo.size}')
-print(f'photo type: {type(photo)}')
-print(f'photo shape: {photo.shape}')
 
 """# 3. Pix2Pix Model"""
 
@@ -162,21 +124,6 @@ print(os.path.join(path_to_dataset, comic_files[0]))
 photo_path = os.path.join(photo_dir, photo_files[0])
 comic_path = os.path.join(comic_dir, comic_files[0])
 input, output = load(photo_path, comic_path)
-
-# Display the images (optional, for verification)
-plt.figure(figsize=(10, 5))
-plt.subplot(1, 2, 1)
-plt.imshow(input.numpy().astype('uint8'))
-plt.title("Input Image")
-plt.axis("off")
-
-plt.subplot(1, 2, 2)
-plt.imshow(output.numpy().astype('uint8'))
-plt.title("Output Image")
-plt.axis("off")
-
-plt.show()
-
 """This was recommended in the tutorials, but we need to apply random Jittering and mirroring to preprocess the training data"""
 
 # Total number of images
@@ -221,16 +168,6 @@ def random_jitter(input_image, output_image):
     output_image = tf.image.flip_left_right(output_image)
 
   return input_image, output_image
-
-"""# Inspect some of the preprocessed image(s)"""
-
-plt.figure(figsize=(6, 6))
-for i in range(4):
-  rj_inp, rj_output = random_jitter(input, output)
-  plt.subplot(2, 2, i + 1)
-  plt.imshow(rj_inp / 255.0)
-  plt.axis('off')
-plt.show()
 
 """Preprocessing Works, Now define helper funtions for loading train and test"""
 
@@ -433,8 +370,6 @@ discriminator = Discriminator()
 
 # test the discriminator
 disc_out = discriminator([input[tf.newaxis, ...], gen_output], training=False)
-plt.imshow(disc_out[0, ..., -1], vmin=-20, vmax=20, cmap='RdBu_r')
-plt.colorbar()
 
 """## Descriminator loss"""
 
