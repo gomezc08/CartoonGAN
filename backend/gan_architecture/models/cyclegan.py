@@ -97,6 +97,8 @@ photo_dir = os.path.join(path, "faces")
 comic_dir = os.path.join(path, "comics")
 
 # Split into train/test (80/20 split used in the tutorials)
+all_photo_files = list((i for i in sorted(os.listdir(photo_dir))))
+all_comic_files = list((i for i in sorted(os.listdir(comic_dir))))
 train_photo_files, test_photo_files = train_test_split(
     all_photo_files, test_size=0.2, random_state=42
 )
