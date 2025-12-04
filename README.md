@@ -1,12 +1,6 @@
 # Memo Studio - Cartoon GAN
 
-Allow users to turn their images into cartoon images. See full techspec here: [https://docs.google.com/document/d/1EDiuOM7pzMlwyO4g-ZQU2VtMs2yAtt-3llWDrcgQpJQ/edit?usp=sharing](https://docs.google.com/document/d/1iprGaKx4DIpROkuvtuIHND9XW9GibiCqs7uuzehG4FY/edit?usp=sharing)
-
-## Importing Models
-Download the pix2pix and cycleGAN model and add them to `backend/models` by running the following Google Colab Notebooks:
-- **pix2pix_generator_model:** [Pix2Pix Model](https://colab.research.google.com/drive/1MxThv4SazSCjcm8Zc8WkA6PDHhBPJLCm?usp=sharing)
-- **cycle_gan_generator_g_model:** [CycleGAN Model](https://colab.research.google.com/drive/1KO5kDbc-HDjUuEwroOFE-lf4Aiof9GaG?usp=sharing)
-
+Allow users to turn their images into cartoon images. [See full techspec here](https://docs.google.com/document/d/1iprGaKx4DIpROkuvtuIHND9XW9GibiCqs7uuzehG4FY/edit?usp=sharing)
 
 ## Prerequisites
 - Node.js: Download here: https://nodejs.org/en 
@@ -16,21 +10,56 @@ Download the pix2pix and cycleGAN model and add them to `backend/models` by runn
 
 ## Installation
 
-1. Install Node.js dependencies:
+Install Node.js dependencies:
    ```bash
    npm install
    cd frontend && npm install && cd ..
    ```
 
-2. Install Python dependencies:
-   ```bash
-   pip install -r backend/requirements.txt
-   ```
-
 ## Quick Start
 
-### Run the Application
+### Step 1: Set Up Virtual Environment (if not already done)
+Create and activate a Python virtual environment:
 
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# macOS/Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Then install dependencies:
+```bash
+pip install -r backend/requirements.txt
+```
+
+### Step 2: Download and/or Import Models
+There are 2 ways to download the models used...
+
+#### a. CLI (recommended)
+Run the following command to train and save your own Pix2Pix and CycleGAN model: 
+
+**Windows:**
+```bash
+python backend\gan_architecture\run_models.py
+```
+
+**macOS/Linux:**
+```bash
+python3 backend/gan_architecture/run_models.py
+```
+
+**Note:** If `python` doesn't work on Windows, try `py`. If `python3` doesn't work on macOS/Linux, try `python`.
+
+#### b. Manually
+Download the pix2pix and cycleGAN model and add them to `backend/models` by running the following Google Colab Notebooks:
+- **pix2pix_generator_model:** [Pix2Pix Model](https://colab.research.google.com/drive/1MxThv4SazSCjcm8Zc8WkA6PDHhBPJLCm?usp=sharing)
+- **cycle_gan_generator_g_model:** [CycleGAN Model](https://colab.research.google.com/drive/1KO5kDbc-HDjUuEwroOFE-lf4Aiof9GaG?usp=sharing)
+
+### Step 3: Run the Application
 The easiest way to run both frontend and backend together:
 
 ```bash
