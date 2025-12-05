@@ -4,3 +4,4 @@ package-lock.json
 *__pycache__*
 backend/gan_architecture/models/cycle_gan_generator_g_model.keras
 backend/gan_architecture/models/pix2pix_generator_model.keras
+backend/gan_architecture/data/

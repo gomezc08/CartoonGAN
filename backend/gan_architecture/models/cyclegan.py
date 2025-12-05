@@ -38,7 +38,7 @@ dtype = torch.float16 if device == "cuda" else torch.float32
 
 ## Load Human Dataset
 """
-
+# backend\gan_architecture\data\face2comics_v2.0.0_by_Sxela\face2comics_v2.0.0_by_Sxela\faces\0.jpg
 # Get the directory where this script is located (models directory)
 MODELS_DIR = os.path.dirname(os.path.abspath(__file__))
 # Go up one level to gan_architecture directory
@@ -117,7 +117,6 @@ def load_image(path):
     img = tf.io.read_file(path)
     img = tf.image.decode_jpeg(img, channels=3)
     return img
-
 # Create datasets (matching the CycleGAN structure)
 train_faces = tf.data.Dataset.from_tensor_slices(train_photo_paths).map(
     load_image, num_parallel_calls=tf.data.AUTOTUNE
@@ -153,7 +152,6 @@ def normalize(image):
   image = tf.cast(image, tf.float32)
   image = (image / 127.5) - 1
   return image
-
 def random_jitter(image):
   # resizing to 286 x 286 x 3
   image = tf.image.resize(image, [286, 286],
@@ -199,7 +197,6 @@ sample_comic = next(iter(train_comics))
 
 We didn't want to focus this notebook on creating the same models, so we just pretty much grabbed the same generators and discriminators used in pix2pix. For more detail on each Neural Network, see our pix2pix notebook
 """
-
 OUTPUT_CHANNELS = 3
 
 generator_g = pix2pix.unet_generator(OUTPUT_CHANNELS, norm_type='instancenorm')
@@ -283,7 +280,6 @@ def generate_images(model, test_input):
   plt.show()
 
 """# 5. Trainning"""
-
 @tf.function
 def train_step(real_x, real_y):
   # persistent is set to True because the tape is used more than
@@ -344,8 +340,7 @@ def train_step(real_x, real_y):
 
   discriminator_y_optimizer.apply_gradients(zip(discriminator_y_gradients,
                                                 discriminator_y.trainable_variables))
-
-print(EPOCHS)
+print(f"EPOCHS: {EPOCHS}")
 for epoch in range(EPOCHS):
   start = time.time()
 
