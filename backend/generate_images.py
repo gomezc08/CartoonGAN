@@ -10,7 +10,7 @@ from image_utils import tensor_to_image, image_to_base64, save_image
 
 # Get the absolute path to the Backend files directory
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-MODELS_DIR = os.path.join(BACKEND_DIR, "models")
+MODELS_DIR = os.path.join(BACKEND_DIR, "gan_architecture/models")
 
 def generate_cycle_gan_cartoon(preprocessed_image=None):
     """
